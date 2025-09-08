@@ -16,7 +16,7 @@ class Graph():
         self.start = labyrinthStart
         self.end = labyrinthEnd
 
-    def runIteration(self):
+    def runIteration(self) -> None:
         """
         1 - mover entrante\n
         2 - mover minotauro\n
@@ -26,4 +26,7 @@ class Graph():
         6 - processar batalha\n
         7 - diminuir suprimentos\n
         """
+        pass
+
+    def findNode(self, startNode: int, searchedNode: int) -> int:
         pass
