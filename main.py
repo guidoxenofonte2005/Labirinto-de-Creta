@@ -1,4 +1,4 @@
 from objects.graph import Graph
 
-coisa = Graph(1, 4, 2)
-coisa.runIteration()
+g = Graph(1, 4, 3, 5)
+g.setNodeInfo()

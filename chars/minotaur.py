@@ -1,5 +1,5 @@
-from baseChar import BaseChar
-from objects.graph import Node
+from chars.baseChar import *
+from objects.node import Node
 
 class Minotaur(BaseChar):
     def __init__(self, initialPos: int, detectionDistance: int):
@@ -8,7 +8,7 @@ class Minotaur(BaseChar):
         self.DETECTED_PLAYER = False
         self.pursuitOrderArray: list[Node] = []
 
-    def characterCheck(self, labyrinthGuyPos: int):
+    def characterCheck(self, distanceToPlayer: int):
         pass
 
     def combat(self):

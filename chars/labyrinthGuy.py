@@ -1,4 +1,4 @@
-from baseChar import BaseChar
+from chars.baseChar import *
 
 class LabyrinthGuy(BaseChar):
     def __init__(self, initialPos: int):
