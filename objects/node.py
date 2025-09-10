@@ -11,3 +11,7 @@ class Node():
     
     def setAdjascencies(self, newAdjascencies: dict):
         self.adjascentVertices = newAdjascencies
+    
+    def __str__(self):
+        print(f"Node {self.nodeID} information")
+        print(f"Vertices: {self.adjascentVertices}")

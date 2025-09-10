@@ -6,7 +6,7 @@ from objects.node import *
 
 class Graph():
     def __init__(self, labyrinthStart: int, labyrinthEnd: int, startMinotaurPos: int, graphSize: int):
-        self.vertices: list[Node] = [Node(_, {}) for _ in range(graphSize)]
+        self.vertices: list[Node] = [Node(i, {}) for i in range(graphSize)]
         self.minotaur: Minotaur = Minotaur(startMinotaurPos, 10)
         self.start = labyrinthStart
         self.end = labyrinthEnd
@@ -33,7 +33,7 @@ class Graph():
             newAdjascencies = {}
             for vertex, weight in info.items():
                 newAdjascencies[vertex] = weight
-            self.vertices[node].setAdjascencies(newAdjascencies)
+            self.vertices[int(node)].setAdjascencies(newAdjascencies)
         
         for node in self.vertices:
             for i in range(len(self.vertices)):

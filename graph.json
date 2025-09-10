@@ -1,0 +1,15 @@
+{
+    "numVertices": 10,
+    "numEdges": 15,
+    "edgeList": {
+        "1": {
+            "2" : 3,
+            "3" : 4
+        }
+    },
+    "enterVertex": 1,
+    "exitVertex": 8,
+    "minotaurInitialPos": 4,
+    "minotaurDetectionDistance": 15,
+    "foodTime": 30
+}
