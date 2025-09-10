@@ -15,3 +15,7 @@ class Minotaur(BaseChar):
 
     def combat(self) -> bool:
         return randint(1, 100) == 1
+    
+    def move(self, currentNode: Node):
+        speed: int = 2 if self.DETECTED_PLAYER else 1
+        return super().move(currentNode, speed)
