@@ -5,6 +5,9 @@ class EDGE_INFO(Enum):
     WEIGHT = 1
 
 class Node():
-    def __init__(self, newID: int, adjascencies: list[dict[int:int]]):
+    def __init__(self, newID: int, adjascencies: dict):
         self.nodeID: int = newID
-        self.adjascentVertices: list[dict[int:int]] = adjascencies # next vertex / weight
+        self.adjascentVertices: dict = adjascencies # next vertex / weight
+    
+    def setAdjascencies(self, newAdjascencies: dict):
+        self.adjascentVertices = newAdjascencies
