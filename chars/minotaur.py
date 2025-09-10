@@ -1,5 +1,6 @@
 from chars.baseChar import *
 from objects.node import Node
+from objects.graph import Graph
 
 from random import randint
 
@@ -16,6 +17,8 @@ class Minotaur(BaseChar):
     def combat(self) -> bool:
         return randint(1, 100) == 1
     
-    def move(self, currentNode: Node):
-        speed: int = 2 if self.DETECTED_PLAYER else 1
-        return super().move(currentNode, speed)
+    def move(self, currentNode: Node, graph: Graph, chaseNode: Node = None):
+        if not self.DETECTED_PLAYER:
+            return super().move(currentNode)
+        path = graph.findPath(currentNode, chaseNode)
+        if path == None: return super().move(currentNode)

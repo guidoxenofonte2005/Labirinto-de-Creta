@@ -70,3 +70,40 @@ class Graph():
                     print(f"Índice {e} não encontrado")
 
         return distance[searchedNode]
+
+    def findPath(self, startNode: int, searchedNode: int) -> list[Node]:
+        distance: list[int] = [1e7] * len(self.vertices)
+        distance[startNode] = 0
+
+        fatherNode = {startNode: None}
+        
+        heap = [(0, startNode)]
+
+        while heap:
+            currentCost, currentVertex = heapq.heappop(heap)
+
+            if currentVertex == searchedNode:
+                break
+            
+            if currentCost > distance[currentVertex]:
+                continue
+
+            for item in self.vertices:
+                try:
+                    if distance[currentVertex] + item.adjascentVertices[currentVertex] < distance[item.nodeID]:
+                        distance[item.nodeID] = distance[currentVertex] + item.adjascentVertices[currentVertex]
+                        fatherNode[item.nodeID] = currentVertex
+                        heapq.heappush(heap, (distance[item.nodeID], item.nodeID))
+                except KeyError as e:
+                    print(f"Índice {e} não encontrado")
+
+        if distance[searchedNode] >= 1e7: return None
+
+        path: list[Node] = []
+        currentVertex = searchedNode
+        while currentVertex is not None:
+            path.append(self.vertices[currentVertex])
+            currentVertex = fatherNode[currentVertex]
+        path.reverse()
+        
+        return path
