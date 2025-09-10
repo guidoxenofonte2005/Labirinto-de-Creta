@@ -13,5 +13,7 @@ class Node():
         self.adjascentVertices = newAdjascencies
     
     def __str__(self):
-        print(f"Node {self.nodeID} information")
-        print(f"Vertices: {self.adjascentVertices}")
+        returnStr: str = ""
+        returnStr += f"Node {self.nodeID} information\n"
+        returnStr += f"Vertices: {self.adjascentVertices}\n"
+        return returnStr
