@@ -28,7 +28,7 @@ class Main:
         7 - diminuir suprimentos\n
         """
         self.iterationCounter += 1
-        self.labyrinthGuy.move(self.labyrinthGuy.position)
+        self.labyrinthGuy.move(self.labyrinthGuy.position, self.graph)
         if self.labyrinthGuy.isExitFound(self.graph.end):
             return 1
         self.minotaur.characterCheck(self.graph.findNode(self.minotaur.position, self.labyrinthGuy.position))

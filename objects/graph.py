@@ -40,6 +40,8 @@ class Graph():
 
                 next = self.vertices[i % len(self.vertices)]
                 if node.nodeID in next.adjascentVertices and next.nodeID not in node.adjascentVertices:
+                    next.adjascentVertices[node.nodeID] = int(node.adjascentVertices[next.nodeID])
+                elif next.nodeID in node.adjascentVertices and node.nodeID not in next.adjascentVertices:
                     node.adjascentVertices[next.nodeID] = int(next.adjascentVertices[node.nodeID])
 
     # algoritmo de dijkstra
@@ -51,6 +53,7 @@ class Graph():
         @param searchedNode: (int) Index of the node who's being searched
         """
         distance: list[int] = [1e7] * len(self.vertices)
+        # print(type(startNode), type(searchedNode))
         distance[startNode.nodeID] = 0
         
         heap = [(0, startNode.nodeID)]
@@ -67,10 +70,11 @@ class Graph():
                         distance[item.nodeID] = distance[w] + item.adjascentVertices[w]
                         heapq.heappush(heap, (distance[item.nodeID], item.nodeID))
                 except KeyError as e:
-                    print(f"Índice {e} não encontrado")
+                    # print(f"Índice {e} não encontrado")
+                    pass
 
         try:
-            return distance[int(searchedNode)]
+            return distance[int(searchedNode.nodeID)]
         except IndexError as e:
             pass
 
@@ -98,15 +102,16 @@ class Graph():
                         fatherNode[item.nodeID] = currentVertex
                         heapq.heappush(heap, (distance[item.nodeID], item.nodeID))
                 except KeyError as e:
-                    print(f"Índice {e} não encontrado")
+                    # print(f"Índice {e} não encontrado")
+                    pass
 
         if distance[searchedNode.nodeID] >= 1e7: return None
 
         path: list[Node] = []
         currentVertex = searchedNode.nodeID
         while currentVertex is not None:
-            path.append(self.vertices[currentVertex.nodeID])
-            currentVertex = fatherNode[currentVertex.nodeID]
+            path.append(self.vertices[currentVertex])
+            currentVertex = fatherNode[currentVertex]
         path.reverse()
         
         return path

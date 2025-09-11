@@ -8,5 +8,5 @@ class LoadFileSystem:
         except FileNotFoundError as e:
             print("Error, file not found")
             self.content = None
-        print(self.content.values())
+        # print(self.content.values())
     

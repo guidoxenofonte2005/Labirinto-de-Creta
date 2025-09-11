@@ -19,11 +19,12 @@ class Minotaur(BaseChar):
     
     def move(self, currentNode: Node, graph: Graph, chaseNode: Node = None):
         if not self.DETECTED_PLAYER:
-            return super().move(currentNode)
+            return super().move(currentNode, graph)
         
         path = graph.findPath(currentNode, chaseNode)
         if path == None:
-            return super().move(currentNode)
+            return super().move(currentNode, graph)
 
-        self.pursuitOrderArray.append(path[:2] if len(path) > 2 else path)
+        for i in range(min(len(path), 2)):
+            self.pursuitOrderArray.append(path[i])
         self.position = self.pursuitOrderArray[-1]
