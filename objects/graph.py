@@ -40,7 +40,7 @@ class Graph():
 
                 next = self.vertices[i % len(self.vertices)]
                 if node.nodeID in next.adjascentVertices and next.nodeID not in node.adjascentVertices:
-                    node.adjascentVertices[next.nodeID] = next.adjascentVertices[node.nodeID]
+                    node.adjascentVertices[next.nodeID] = int(next.adjascentVertices[node.nodeID])
 
     # algoritmo de dijkstra
     def findNode(self, startNode: Node, searchedNode: Node) -> int:

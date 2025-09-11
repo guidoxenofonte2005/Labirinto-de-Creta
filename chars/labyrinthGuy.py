@@ -11,6 +11,3 @@ class LabyrinthGuy(BaseChar):
     
     def isExitFound(self, exitPosition: int) -> bool:
         return self.position == exitPosition
-    
-    def move(self, currentNode: Node):
-        return super().move(currentNode)
