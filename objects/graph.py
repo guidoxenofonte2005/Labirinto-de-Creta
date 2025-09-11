@@ -1,7 +1,7 @@
 import heapq
 from functools import singledispatchmethod
 
-from objects.node import *
+from objects.node import Node
 
 class Graph():
     def __init__(self, labyrinthStart: int, labyrinthEnd: int, graphSize: int):
@@ -43,7 +43,7 @@ class Graph():
                     node.adjascentVertices[next.nodeID] = next.adjascentVertices[node.nodeID]
 
     # algoritmo de dijkstra
-    def findNode(self, startNode: int, searchedNode: int) -> int:
+    def findNode(self, startNode: Node, searchedNode: Node) -> int:
         """
         Uses Dijkstra's algorithm to calculate said distance\n
         Returns the distance between two known nodes as an integer\n
@@ -51,9 +51,9 @@ class Graph():
         @param searchedNode: (int) Index of the node who's being searched
         """
         distance: list[int] = [1e7] * len(self.vertices)
-        distance[startNode] = 0
+        distance[startNode.nodeID] = 0
         
-        heap = [(0, startNode)]
+        heap = [(0, startNode.nodeID)]
 
         while heap:
             currentCost, w = heapq.heappop(heap)
@@ -69,15 +69,18 @@ class Graph():
                 except KeyError as e:
                     print(f"Índice {e} não encontrado")
 
-        return distance[searchedNode]
+        try:
+            return distance[int(searchedNode)]
+        except IndexError as e:
+            pass
 
-    def findPath(self, startNode: int, searchedNode: int) -> list[Node]:
+    def findPath(self, startNode: Node, searchedNode: Node) -> list[Node]:
         distance: list[int] = [1e7] * len(self.vertices)
-        distance[startNode] = 0
+        distance[startNode.nodeID] = 0
 
-        fatherNode = {startNode: None}
+        fatherNode = {startNode.nodeID: None}
         
-        heap = [(0, startNode)]
+        heap = [(0, startNode.nodeID)]
 
         while heap:
             currentCost, currentVertex = heapq.heappop(heap)
@@ -97,13 +100,13 @@ class Graph():
                 except KeyError as e:
                     print(f"Índice {e} não encontrado")
 
-        if distance[searchedNode] >= 1e7: return None
+        if distance[searchedNode.nodeID] >= 1e7: return None
 
         path: list[Node] = []
-        currentVertex = searchedNode
+        currentVertex = searchedNode.nodeID
         while currentVertex is not None:
-            path.append(self.vertices[currentVertex])
-            currentVertex = fatherNode[currentVertex]
+            path.append(self.vertices[currentVertex.nodeID])
+            currentVertex = fatherNode[currentVertex.nodeID]
         path.reverse()
         
         return path
