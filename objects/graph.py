@@ -35,14 +35,9 @@ class Graph():
             self.vertices[int(node)].setAdjascencies(newAdjascencies)
         
         for node in self.vertices:
-            for i in range(len(self.vertices)):
-                if i == node.nodeID: continue
-
-                next = self.vertices[i % len(self.vertices)]
-                if node.nodeID in next.adjascentVertices and next.nodeID not in node.adjascentVertices:
-                    next.adjascentVertices[node.nodeID] = int(node.adjascentVertices[next.nodeID])
-                elif next.nodeID in node.adjascentVertices and node.nodeID not in next.adjascentVertices:
-                    node.adjascentVertices[next.nodeID] = int(next.adjascentVertices[node.nodeID])
+            for object, adjacencies in node.adjascentVertices.items():
+                if node.nodeID not in self.vertices[int(object)].adjascentVertices.keys():
+                    self.vertices[int(object)].adjascentVertices[node.nodeID] = adjacencies
 
     # algoritmo de dijkstra
     def findNode(self, startNode: Node, searchedNode: Node) -> int:

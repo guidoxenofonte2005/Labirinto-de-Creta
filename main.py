@@ -46,4 +46,4 @@ codeResult = 0
 while (codeResult == 0):
     codeResult = main.runIteration()
 
-print(f"fim do programa: código {codeResult}")
+print(f"fim do programa: código {codeResult, main.iterationCounter}")

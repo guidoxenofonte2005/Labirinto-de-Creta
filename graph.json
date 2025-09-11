@@ -22,8 +22,8 @@
     "17": { "18": 3 },
     "18": { "19": 1 }
   },
-  "enterVertex": 1,
-  "exitVertex": 20,
+  "enterVertex": 0,
+  "exitVertex": 19,
   "minotaurInitialPos": 10,
   "minotaurDetectionDistance": 12,
   "foodTime": 40
