@@ -27,16 +27,18 @@ class Main:
         6 - processar batalha\n
         7 - diminuir suprimentos\n
         """
+        
+
+        self.labyrinthGuy.supplies -= 1 #Movi pra cá pra garantir que o suprimento diminua mesmo se o entrante não se mover
         self.iterationCounter += 1
-        self.labyrinthGuy.move(self.labyrinthGuy.position, self.graph)
-        if self.labyrinthGuy.isExitFound(self.graph.end):
+        self.labyrinthGuy.move(self.graph)
+        if self.labyrinthGuy.isExitFound(self.graph.vertices[self.graph.end]):
             return 1
         self.minotaur.characterCheck(self.graph.findNode(self.minotaur.position, self.labyrinthGuy.position))
         self.minotaur.move(self.minotaur.position, self.graph, self.labyrinthGuy.position)
         if self.minotaur.position == self.labyrinthGuy.position:
             if not self.minotaur.combat():
                 return -1
-        self.labyrinthGuy.supplies -= 1
         if self.labyrinthGuy.supplies <= 0:
             return -2
         return 0
@@ -45,5 +47,30 @@ main = Main()
 codeResult = 0
 while (codeResult == 0):
     codeResult = main.runIteration()
+
+# Teste print:
+main = Main()
+codeResult = 0
+
+# imprime o estado inicial antes do loop começar
+print(f"Início da Simulação: Entrante no nó {main.labyrinthGuy.position.nodeID}, Minotauro no nó {main.minotaur.position.nodeID}")
+print("-" * 40) 
+
+while (codeResult == 0):
+    # Guarda a posição anterior para ver o movimento 
+    posicao_anterior = main.labyrinthGuy.position.nodeID
+
+    codeResult = main.runIteration()
+
+    # Bloco de impressões a cada iteração para depuração
+    print(f"Iteração: {main.iterationCounter}")
+    print(f"  - Posição do Entrante: {posicao_anterior} -> {main.labyrinthGuy.position.nodeID}")
+    
+    # Converte a lista de nós para uma lista de IDs para facilitar a leitura
+    caminho_percorrido = [node.nodeID for node in main.labyrinthGuy.yarnThread]
+    print(f"  - Fio de Lã (Pilha): {caminho_percorrido}")
+    print(f"  - Suprimentos restantes: {main.labyrinthGuy.supplies}")
+    print("-" * 40)
+
 
 print(f"fim do programa: código {codeResult, main.iterationCounter}")
