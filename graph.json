@@ -24,7 +24,7 @@
   },
   "enterVertex": 0,
   "exitVertex": 19,
-  "minotaurInitialPos": 8,
-  "minotaurDetectionDistance": 5,
-  "foodTime": 40
+  "minotaurInitialPos": 17,
+  "minotaurDetectionDistance": 6,
+  "foodTime": 20
 }
