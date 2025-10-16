@@ -1,75 +1,94 @@
-from chars.baseChar import *
-from objects.node import Node
+from chars.baseChar import *   
+from objects.node import Node  # Importa o node e graph que estão relacionados a o lairinto
 from objects.graph import Graph
 from random import randint, choice
 
 class Minotaur(BaseChar):
     def __init__(self, initialPos: Node, detectionDistance: int):
+        # Chama o construtor da classe base para definir posição inicial
         super().__init__(initialPos)
-        self.detectionDistante = detectionDistance
+
+        # Raio de detecção do jogador (número de nós de distância)
+        self.detectionDistance = detectionDistance
+
+        # Indica se o jogador já foi detectado (modo perseguição ativo)
         self.DETECTED_PLAYER = False
-        # Lista para guardar os IDs (int) dos nós percorridos durante a perseguição
+
+        # Caminho da perseguição: armazena os nós desde que começou a perseguir
         self.pursuit_path: list[int] = []
-        # Lista para guardar o histórico completo de movimentos.
+
+        # Caminho total: histórico de todos os nós visitados
         self.path_history: list[int] = [initialPos.nodeID]
 
     def characterCheck(self, minDistanceToPlayer: int) -> bool:
-        # Verifica se o jogador foi detectado. Retorna True apenas na primeira vez.
-        
-        # Se o jogador já foi detectado antes, não há mudança de estado.
+        """Verifica se o jogador está dentro da distância de detecção.
+        Retorna True apenas na primeira vez que o jogador é detectado."""
+
         if self.DETECTED_PLAYER:
+            # Já estava perseguindo, não faz nada
             return False
-            
-        # Verifica se a distância atual ativa a detecção.
-        if minDistanceToPlayer <= self.detectionDistante:
+
+        # Se o jogador estiver dentro do raio de detecção, ativa perseguição
+        if minDistanceToPlayer <= self.detectionDistance:
             self.DETECTED_PLAYER = True
-            return True  # Retorna True para sinalizar que a detecção ACABOU de ocorrer.
-            
+            return True
+
         return False
 
     def combat(self) -> bool:
-        # Retorna True se o prisioneiro vencer o combate (chane baixa).
+        """Simula uma batalha entre o jogador e o Minotauro.
+        Retorna True se o jogador vencer (1% de chance)."""
         return randint(1, 100) == 1
-    
-    def move(self, currentNode: Node, graph: Graph, chaseNode: Node = None):
-        """
-        Move o Minotauro:
-        - 1 passo aleatório se não estiver em modo de perseguição.
-        - Até 2 passos pelo caminho mínimo em direção ao jogador se estiver perseguindo.
-        """
 
-        # Se não detectou o jogador, move-se 1 passo aleatório.
+    def move(self, currentNode: Node, graph: Graph, chaseNode: Node = None):
+        """Move o Minotauro:
+        - Movimento aleatório se não estiver perseguindo
+        - Caminho controlado (até 2 nós por rodada) se estiver perseguindo o jogador"""
+
+        # Minotauro ainda não detectou o jogador, move apenas 1 nó aleatoriamente
         if not self.DETECTED_PLAYER or chaseNode is None:
-            # Reutiliza a lógica de movimento aleatório da classe pai (BaseChar)
+            # Move aleatoriamente (função herdada da classe baseChar)
             super().move(currentNode, graph)
-            self.path_history.append(self.position.nodeID)
+
+            # Adiciona o novo nó ao histórico completo
+            if self.path_history[-1] != self.position.nodeID:
+                self.path_history.append(self.position.nodeID)
             return
 
-        # Se a perseguição acabou de começar, adiciona a posição inicial ao caminho.
+
+        # Minotauro detectou o jogador (modo perseguição)
+        # Se é o primeiro turno da perseguição, registra o nó inicial
         if not self.pursuit_path:
             self.pursuit_path.append(currentNode.nodeID)
-            
-        # Pede ao grafo que calcule o caminho mínimo.
+
+        # Encontra o caminho mínimo até o jogador
         path = graph.findPath(currentNode, chaseNode)
-        
-        # Se houver um caminho válido...
+
         if path and len(path) > 1:
-            # Determina quantos passos dar (no máximo 2).
+            # Pode andar até 2 nós por rodada
             steps_to_move = min(len(path) - 1, 2)
 
-            # Guarda a posição antiga antes de mover.
-            old_position_id = self.position.nodeID
-            
-            # Atualiza a posição para o destino final desta rodada.
-            self.position = path[steps_to_move]
-            
-            # Adiciona os nós percorridos (passos intermediários) ao registro do caminho.
+            # Percorre os nós do caminho
             for i in range(1, steps_to_move + 1):
-                self.pursuit_path.append(path[i].nodeID)
+                node = path[i]
+                self.position = node  # atualiza posição
 
-            if self.position.nodeID != old_position_id:
-                self.path_history.append(self.position.nodeID)
+                # Registra o nó na lista de perseguição
+                if self.pursuit_path[-1] != node.nodeID:
+                    self.pursuit_path.append(node.nodeID)
+
+                # Registra também no histórico total
+                if self.path_history[-1] != node.nodeID:
+                    self.path_history.append(node.nodeID)
+
         else:
-            # Se não houver caminho (raro), move-se aleatoriamente para não ficar parado.
+            # Caso o grafo não encontre caminho, move aleatoriamente
             super().move(currentNode, graph)
-            self.path_history.append(self.position.nodeID)
+
+            #Sempre atualiza o histórico completo
+            if self.path_history[-1] != self.position.nodeID:
+                self.path_history.append(self.position.nodeID)
+
+            #atualiza o detalhe da perseguição já que o modo perseguição continua ativo
+            if self.pursuit_path[-1] != self.position.nodeID:
+                self.pursuit_path.append(self.position.nodeID)

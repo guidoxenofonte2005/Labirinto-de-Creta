@@ -10,7 +10,11 @@ class Main:
         loadSys = LoadFileSystem(fileLocation)
         self.graph = Graph(loadSys.content["enterVertex"], loadSys.content["exitVertex"], loadSys.content["numVertices"])
         self.graph.setNodeInfo(loadSys.content["edgeList"])
+
+        
+        # Cria o Minotauro na posição inicial informada no arquivo e define a distância máxima de detecção
         self.minotaur = Minotaur(self.graph.vertices[loadSys.content["minotaurInitialPos"]], loadSys.content["minotaurDetectionDistance"])
+
         self.labyrinthGuy = LabyrinthGuy(self.graph.vertices[loadSys.content["enterVertex"]], loadSys.content["foodTime"])
         
         self.iterationCounter: int = 0
@@ -58,19 +62,29 @@ class Main:
             self.final_code = 1
             return 1
 
+        # Usa Dijkstra para calcular a distância entre o Minotauro e o Entrante
         distance = self.graph.findNode(self.minotaur.position, self.labyrinthGuy.position)
+
+        """ Se o jogador estiver dentro do raio de percepção p(G),
+        o método characterCheck() muda o estado DETECTED_PLAYER para True.
+        A primeira vez que isso acontece é registrada para o relatório"""
         if self.minotaur.characterCheck(distance) and self.detection_iteration is None:
             self.detection_iteration = self.iterationCounter
 
+        """O método move() controla tanto o movimento aleatório (antes da detecção)
+        quanto o movimento de perseguição(depois a detecção)"""
         self.minotaur.move(self.minotaur.position, self.graph, self.labyrinthGuy.position)
-        
+
+
+        # Se o Minotauro e o Entrante estão no mesmo nó, inicia combate.
         if self.minotaur.position.nodeID == self.labyrinthGuy.position.nodeID:
             self.capture_iteration = self.iterationCounter
+            # Método combat(): 1% chance do jogador vencer
             if not self.minotaur.combat():
-                self.final_code = -1
+                self.final_code = -1 #Jogador morreu
                 return -1
             else:
-                self.final_code = 2
+                self.final_code = 2 #Jogador venceu
                 return 2
 
         self.labyrinthGuy.supplies -= 1
@@ -102,8 +116,12 @@ while codeResult == 0:
     print(f"  - Minotauro moveu: {posicao_anterior_minotaur} -> {main.minotaur.position.nodeID}")
     caminho_entrante_ids = [node.nodeID for node in main.labyrinthGuy.yarnThread]
     print(f"  - Fio de Lã (Caminho do Entrante): {caminho_entrante_ids}")
+
+    # Mostra caminho percorrido pelo Minotauro durante toda a simulação
     if hasattr(main.minotaur, 'path_history'):
         print(f"  - Caminho do Minotauro: {main.minotaur.path_history}")
+        
+    # Mostra detalhes do caminho apenas durante perseguição
     if main.minotaur.pursuit_path:
         print(f"  - (Detalhe Perseguição): {main.minotaur.pursuit_path}")
     print(f"  - Suprimentos restantes: {main.labyrinthGuy.supplies}")
