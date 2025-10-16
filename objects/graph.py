@@ -10,24 +10,9 @@ class Graph():
         self.end = labyrinthEnd
         # print(self.vertices)
     
-    # @singledispatchmethod
-    # def setNodeInfo(self, nodeInfo) -> None:
-    #     raise TypeError(f"Unsupported type: {type(nodeInfo)}")
-    
-    # @setNodeInfo.register
-    # def setNodeInfo(self, node: int, nodeInfo: tuple[int, int]) -> float:
-    #     """
-    #     """
 
     # @setNodeInfo.register
     def setNodeInfo(self, nodeInfo: dict) -> None:
-        """
-        Passes the node info down to every single node in graph
-        @param nodeInfo: Information about the nodes, using the following json structure:\n
-        nodeID: {\n
-            vertex: weight\n
-        }
-        """
         for node, info in nodeInfo.items():
             newAdjascencies = {}
             for vertex, weight in info.items():
@@ -41,12 +26,6 @@ class Graph():
 
     # algoritmo de dijkstra
     def findNode(self, startNode: Node, searchedNode: Node) -> int:
-        """
-        Uses Dijkstra's algorithm to calculate said distance\n
-        Returns the distance between two known nodes as an integer\n
-        @param startNode: (int) Index of starting node
-        @param searchedNode: (int) Index of the node who's being searched
-        """
         distance: list[int] = [1e7] * len(self.vertices)
         # print(type(startNode), type(searchedNode))
         distance[startNode.nodeID] = 0
