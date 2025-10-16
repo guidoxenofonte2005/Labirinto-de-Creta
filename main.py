@@ -14,7 +14,6 @@ class Main:
         self.labyrinthGuy = LabyrinthGuy(self.graph.vertices[loadSys.content["enterVertex"]], loadSys.content["foodTime"])
         
         self.iterationCounter: int = 0
-        # Variáveis para registrar eventos importantes para o relatório
         self.detection_iteration = None
         self.capture_iteration = None
         self.final_code = 0
@@ -24,99 +23,108 @@ class Main:
         excluded = {self.graph.start, self.graph.end, self.minotaur.position.nodeID}
         possible_nodes = [i for i in range(len(self.graph.vertices)) if i not in excluded]
         self.map_node = random.choice(possible_nodes)
+
+    def show_map_path(self):
+        """
+        NOVA FUNÇÃO: Calcula e mostra apenas os próximos 7 passos do caminho mais curto.
+        """
+        print("\n--- O MAPA REVELA O CAMINHO ---")
         
+        start_node = self.labyrinthGuy.position
+        exit_node = self.graph.vertices[self.graph.end]
+        shortest_path_nodes = self.graph.findPath(start_node, exit_node)
+        
+        if shortest_path_nodes:
+            shortest_path_ids = [node.nodeID for node in shortest_path_nodes]
+            # Pega a posição atual + os próximos 7 passos (total de 8 nós na lista)
+            path_range = shortest_path_ids[:8]
+            
+            print(f"O mapa revela os próximos {len(path_range) - 1} passos do caminho mais curto:")
+            print(f"==> {path_range}")
+        else:
+            print("Não foi possível calcular um caminho para a saída a partir daqui.")
+
+        print("--------------------------------\n")
+        time.sleep(3) # Pausa para o jogador analisar o caminho
 
     def runIteration(self) -> int:
-        # Executa uma única rodada (iteração) da simulação
         self.iterationCounter += 1
         
-        # 1. Mover o entrante (LabyrinthGuy)
-        self.labyrinthGuy.move(self.graph)
+        exit_node = self.graph.vertices[self.graph.end]
+        self.labyrinthGuy.move(self.graph, exit_node)
 
         # Verifica se o entrante encontrou o mapa
         if self.labyrinthGuy.position.nodeID == self.map_node:
-            if not hasattr(self.labyrinthGuy, "has_map") or not self.labyrinthGuy.has_map:
+            if not self.labyrinthGuy.has_map:
                 self.labyrinthGuy.has_map = True
-                print("🗺️ O entrante encontrou um mapa antigo! Ele agora pode visualizar mais partes do labirinto.")
+                self.labyrinthGuy.map_duration = 7
+                print(f"🗺️  O entrante encontrou um mapa! Ele pode fazer {self.labyrinthGuy.map_duration} movimentos inteligentes.")
+                # CHAMA A NOVA FUNÇÃO DE CAMINHO
+                self.show_map_path()
         
-        # 2. Verificar se o entrante encontrou a saída
-        exit_node = self.graph.vertices[self.graph.end] # Procura no graph.json o vétcie que foi definida a saída e utiliza para verificar se saiu ou n
         if self.labyrinthGuy.isExitFound(exit_node):
             self.final_code = 1
             return 1
 
-        # 3. Verificar a distância e o estado de detecção do Minotauro
-        distance = self.graph.findNode(self.minotaur.position, self.labyrinthGuy.position) # Verifica a distância entre o minotauro e o player
-        if self.minotaur.characterCheck(distance) and self.detection_iteration is None: # Vê se a distância entre minotauro e player é igual a distância de detecção 
+        distance = self.graph.findNode(self.minotaur.position, self.labyrinthGuy.position)
+        if self.minotaur.characterCheck(distance) and self.detection_iteration is None:
             self.detection_iteration = self.iterationCounter
 
-        # 4. Mover o Minotauro
         self.minotaur.move(self.minotaur.position, self.graph, self.labyrinthGuy.position)
         
-        # 5. Verificar se houve encontro para iniciar combate
         if self.minotaur.position.nodeID == self.labyrinthGuy.position.nodeID:
             self.capture_iteration = self.iterationCounter
             if not self.minotaur.combat():
-                self.final_code = -1 # Derrota em combate
+                self.final_code = -1
                 return -1
             else:
-                self.final_code = 2 # Vitória em combate (raro)
+                self.final_code = 2
                 return 2
 
-        # 6. Consumir suprimentos
         self.labyrinthGuy.supplies -= 1
         if self.labyrinthGuy.supplies <= 0:
-            self.final_code = -2 # Derrota por fome
+            self.final_code = -2
             return -2
             
-        return 0 # Jogo continua
+        return 0
 
-# A patir daqui vai ser o vloco de exec principal
+# --- BLOCO DE EXECUÇÃO PRINCIPAL ---
 main = Main()
 codeResult = 0
 
-# Imprime o cabeçalho inicial da simulação
 print("=============================================")
 print("INÍCIO DA SIMULAÇÃO")
 print("=============================================")
-print(f"Mapa do Labirinto está no nó: {main.map_node}")
+# CORRIGIDO: Garante que a localização do mapa seja sempre impressa
+print(f"Localização do Mapa Secreto: Nó {main.map_node}")
 print(f"Entrante começa no nó: {main.labyrinthGuy.position.nodeID}")
 print(f"Minotauro começa no nó: {main.minotaur.position.nodeID}")
 print(f"Suprimentos iniciais: {main.labyrinthGuy.supplies}")
 print("---------------------------------------------")
-time.sleep(2) # Pausa para o usuário ler as informações iniciais
+time.sleep(2)
 
-# Loop principal da simulação
+# (O resto do código permanece o mesmo)
 while codeResult == 0:
-    # Armazena as posições antes do movimento para o relatório da rodada
     posicao_anterior_guy = main.labyrinthGuy.position.nodeID
     posicao_anterior_minotaur = main.minotaur.position.nodeID
-
     codeResult = main.runIteration()
-
-    # Imprime o relatório da rodada no formato solicitado
     print(f"Rodada: {main.iterationCounter}")
     print(f"  - Entrante moveu: {posicao_anterior_guy} -> {main.labyrinthGuy.position.nodeID}")
     print(f"  - Minotauro moveu: {posicao_anterior_minotaur} -> {main.minotaur.position.nodeID}")
-    
     caminho_entrante_ids = [node.nodeID for node in main.labyrinthGuy.yarnThread]
     print(f"  - Fio de Lã (Caminho do Entrante): {caminho_entrante_ids}")
-    
-    # Exibe o caminho de perseguição do Minotauro apenas se ele tiver começado
+    if hasattr(main.minotaur, 'path_history'):
+        print(f"  - Caminho do Minotauro: {main.minotaur.path_history}")
     if main.minotaur.pursuit_path:
-        print(f"  - Caminho de Perseguição do Minotauro: {main.minotaur.pursuit_path}")
-
+        print(f"  - (Detalhe Perseguição): {main.minotaur.pursuit_path}")
     print(f"  - Suprimentos restantes: {main.labyrinthGuy.supplies}")
     print(f"  - Minotauro detectou o jogador: {main.minotaur.DETECTED_PLAYER}")
     print("---------------------------------------------")
-    
-    time.sleep(0.5) # Pausa entre as rodadas para facilitar a visualização
+    time.sleep(0.5)
 
-# Imprime o rodapé com o resultado final da simulação
 print("\n=============================================")
 print("FIM DA SIMULAÇÃO")
 print("=============================================")
-
 if codeResult == 1:
     print("VITÓRIA: O prisioneiro encontrou a saída!")
 elif codeResult == 2:
@@ -125,6 +133,5 @@ elif codeResult == -1:
     print("DERROTA: O prisioneiro foi pego e morto pelo Minotauro.")
 elif codeResult == -2:
     print("DERROTA: O prisioneiro ficou sem suprimentos e morreu.")
-
 print(f"Resultado final: código {codeResult} (após {main.iterationCounter} rodadas)")
 print("=============================================")

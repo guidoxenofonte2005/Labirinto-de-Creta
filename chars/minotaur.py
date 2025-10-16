@@ -10,6 +10,8 @@ class Minotaur(BaseChar):
         self.DETECTED_PLAYER = False
         # Lista para guardar os IDs (int) dos nós percorridos durante a perseguição
         self.pursuit_path: list[int] = []
+        # Lista para guardar o histórico completo de movimentos.
+        self.path_history: list[int] = [initialPos.nodeID]
 
     def characterCheck(self, minDistanceToPlayer: int) -> bool:
         # Verifica se o jogador foi detectado. Retorna True apenas na primeira vez.
@@ -40,6 +42,7 @@ class Minotaur(BaseChar):
         if not self.DETECTED_PLAYER or chaseNode is None:
             # Reutiliza a lógica de movimento aleatório da classe pai (BaseChar)
             super().move(currentNode, graph)
+            self.path_history.append(self.position.nodeID)
             return
 
         # Se a perseguição acabou de começar, adiciona a posição inicial ao caminho.
@@ -53,6 +56,9 @@ class Minotaur(BaseChar):
         if path and len(path) > 1:
             # Determina quantos passos dar (no máximo 2).
             steps_to_move = min(len(path) - 1, 2)
+
+            # Guarda a posição antiga antes de mover.
+            old_position_id = self.position.nodeID
             
             # Atualiza a posição para o destino final desta rodada.
             self.position = path[steps_to_move]
@@ -60,6 +66,10 @@ class Minotaur(BaseChar):
             # Adiciona os nós percorridos (passos intermediários) ao registro do caminho.
             for i in range(1, steps_to_move + 1):
                 self.pursuit_path.append(path[i].nodeID)
+
+            if self.position.nodeID != old_position_id:
+                self.path_history.append(self.position.nodeID)
         else:
             # Se não houver caminho (raro), move-se aleatoriamente para não ficar parado.
             super().move(currentNode, graph)
+            self.path_history.append(self.position.nodeID)
