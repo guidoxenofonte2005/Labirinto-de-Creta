@@ -19,12 +19,25 @@ class Main:
         self.capture_iteration = None
         self.final_code = 0
 
+        # Criaçao do mapa escondido
+        import random
+        excluded = {self.graph.start, self.graph.end, self.minotaur.position.nodeID}
+        possible_nodes = [i for i in range(len(self.graph.vertices)) if i not in excluded]
+        self.map_node = random.choice(possible_nodes)
+        
+
     def runIteration(self) -> int:
         # Executa uma única rodada (iteração) da simulação
         self.iterationCounter += 1
         
         # 1. Mover o entrante (LabyrinthGuy)
         self.labyrinthGuy.move(self.graph)
+
+        # Verifica se o entrante encontrou o mapa
+        if self.labyrinthGuy.position.nodeID == self.map_node:
+            if not hasattr(self.labyrinthGuy, "has_map") or not self.labyrinthGuy.has_map:
+                self.labyrinthGuy.has_map = True
+                print("🗺️ O entrante encontrou um mapa antigo! Ele agora pode visualizar mais partes do labirinto.")
         
         # 2. Verificar se o entrante encontrou a saída
         exit_node = self.graph.vertices[self.graph.end] # Procura no graph.json o vétcie que foi definida a saída e utiliza para verificar se saiu ou n
@@ -66,6 +79,7 @@ codeResult = 0
 print("=============================================")
 print("INÍCIO DA SIMULAÇÃO")
 print("=============================================")
+print(f"Mapa do Labirinto está no nó: {main.map_node}")
 print(f"Entrante começa no nó: {main.labyrinthGuy.position.nodeID}")
 print(f"Minotauro começa no nó: {main.minotaur.position.nodeID}")
 print(f"Suprimentos iniciais: {main.labyrinthGuy.supplies}")
