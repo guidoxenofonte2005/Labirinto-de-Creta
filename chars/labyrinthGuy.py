@@ -7,34 +7,12 @@ from objects.graph import Graph
 class LabyrinthGuy(BaseChar):
     def __init__(self, initialPos: Node, supplyAmount: int):
         super().__init__(initialPos)
-
-        #A pilha yarnThread agora guarda o caminho percorrido pelo personagem
-
-        self.yarnThread: list[Node] = [initialPos] #pilha 
-        self.supplies: int = supplyAmount
-
-        self.has_map = False
-        self.map_duration = 0
-    
-import random
-
-from chars.baseChar import *
-from objects.node import Node
-from objects.graph import Graph
-
-class LabyrinthGuy(BaseChar):
-    def __init__(self, initialPos: Node, supplyAmount: int):
-        super().__init__(initialPos)
         self.yarnThread: list[Node] = [initialPos] #pilha 
         self.supplies: int = supplyAmount
         self.has_map = False
         self.map_duration = 0
     
     def move(self, graph: Graph, exitNode: Node):
-    
-        # Método principal que decide qual estratégia de movimento usar.
-        
-        # Se o jogador tem o mapa e o seu efeito ainda está ativo...
         if self.has_map and self.map_duration > 0:
             self.move_greedy(graph, exitNode)
             self.map_duration -= 1
